@@ -8,6 +8,14 @@ class MoviesController < ApplicationController
 
   def index
 
+    if not params[:ratings] and session[:ratings]
+      params[:ratings] = session[:ratings]
+    end
+    if not params[:movie_title] and session[:movie_title]
+      params[:movie_title] = session[:movie_title]
+      params[:release_date] = session[:release_date]
+    end
+
     @all_ratings = Movie.get_all_ratings
 
     if params[:ratings]
@@ -16,12 +24,16 @@ class MoviesController < ApplicationController
       @ratings = @all_ratings
     end
 
+    session[:ratings] = params[:ratings]
+    session[:movie_title] = params[:movie_title]
+    session[:release_date] = params[:release_date]
+
     
     @movies = Movie.where(rating: @ratings)
 
-    if params[:movie_title]
+    if params[:movie_title] == 'hilite'
       @movies = @movies.sort_by(&:title)
-    elsif params[:release_date]
+    elsif params[:release_date] == 'hilite'
       @movies = @movies.sort_by(&:release_date)
     end
   end
